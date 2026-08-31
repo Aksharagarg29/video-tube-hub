@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/* ---------- THEME TOKENS ---------- */
+/* These become Tailwind utilities automatically, e.g.:
+   bg-bg, bg-surface, border-border, text-text, text-muted,
+   bg-primary, hover:bg-primary-hover, text-danger */
+@theme {
+  --color-bg: #0f0f0f;
+  --color-surface: #181818;
+  --color-border: #2f2f2f;
+  --color-text: #ffffff;
+  --color-muted: #a3a3a3;
+  --color-primary: #a855f7;
+  --color-primary-hover: #9333ea;
+  --color-danger: #f87171;
+}
+
+body {
+  @apply bg-bg text-text;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- REUSABLE COMPONENT CLASSES ---------- */
+/* Kept as small named classes (instead of repeating long utility
+   strings everywhere) so buttons/inputs stay consistent across pages. */
+.btn {
+  @apply px-4 py-2.5 rounded-lg border border-border bg-transparent text-text text-sm font-semibold hover:bg-surface transition-colors;
+}
+
+.btn-primary {
+  @apply bg-primary border-primary text-white hover:bg-primary-hover;
+}
+
+.input {
+  @apply w-full px-3 py-2.5 rounded-lg border border-border bg-transparent text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+.field {
+  @apply mb-4;
+}
+
+.field label {
+  @apply block mb-1.5 text-sm font-medium;
+}
