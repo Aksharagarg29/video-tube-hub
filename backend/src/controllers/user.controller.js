@@ -11,6 +11,16 @@ const googleClient = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID
 );
 
+// Cookie options used everywhere we set/clear the accessToken and refreshToken cookies.
+// sameSite: "none" + secure: true is required for cross-site cookies to work
+// (frontend on vercel.app, backend on onrender.com are different sites).
+// Hardcoded rather than relying on NODE_ENV, since that isn't guaranteed to be set on the host.
+const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+};
+
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId)
@@ -137,16 +147,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-    };
-
     return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
         new ApiResponse(
             200, 
@@ -267,16 +271,10 @@ const googleLogin = asyncHandler(async (req, res) => {
         const loggedInUser = await User.findById(user._id)
             .select("-password -refreshToken");
 
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-        };
-
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
+            .cookie("accessToken", accessToken, cookieOptions)
+            .cookie("refreshToken", refreshToken, cookieOptions)
             .json(
                 new ApiResponse(
                     200,
@@ -306,15 +304,9 @@ const logOutUser = asyncHandler(async (req, res) => {
         }
     )
 
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-    };
-
     return res.status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
     .json(
         new ApiResponse(200, {}, "User Logged Out")
     )
@@ -340,16 +332,11 @@ const refreshAccessToken = asyncHandler(async(req, res) => {
         if(incomingRefreshToken !== user?.refreshToken){
             throw new APIerror(401, "Refresh token is expired or used")
         }
-        const options = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-        };
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
         return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, cookieOptions)
+        .cookie("refreshToken", refreshToken, cookieOptions)
         .json(
             new ApiResponse(
                 200,
