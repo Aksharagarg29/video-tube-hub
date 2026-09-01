@@ -498,7 +498,8 @@ export default function Channel() {
       <ChannelHeader
         channel={channel}
         isOwnChannel={isOwnChannel}
-        onChannelUpdate={handleChannelUpdate}
+        onAvatarUpdated={handleChannelUpdate}
+        onCoverUpdated={handleChannelUpdate}
         onSubscribe={handleSubscribe}
         onMessage={handleMessage}
       />
